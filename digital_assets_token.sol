@@ -22,7 +22,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     string assetType;
     string assetName;
     string assetIntro;
-    address[256] stakeholders;
+    address[] stakeholders;
     uint256 numStakeHolders;
     uint256 accumulated;
     uint256  _totalSupply;
@@ -63,8 +63,12 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     /**
     * TODO: return the list of assets available for trade
     */
-    function getAssetList(uint256 id) public view returns (string memory){
-       return ("list");
+    function getAssetList(uint256 assetId) public view returns (string memory, string memory){
+        string memory list;
+        for (uint256 s =0; s<assets.length; s+=1){
+            list = list + assets[s] +" ";
+        }
+        return ("list: ", list);
     }
 
    /**
@@ -75,7 +79,8 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        external
        payable
    {
-      // accumulated += msg.value;
+      assetInfo storage a = assets[assetId];
+      a.accumulated += msg.value;
    }
    
    /**
@@ -88,7 +93,8 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        override
        returns (uint256)
    {
-       //return _totalSupply;
+       assetInfo storage a = assets[assetId];
+       return a._totalSupply;
    }
    
    /**
@@ -103,7 +109,8 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        override
        returns (uint256 token_owned) 
    {
-       // return balance[tokenOwner];
+       assetInfo storage a = assets[assetId];
+       return a.balance[tokenOwner];
    }
    
    /**
@@ -163,11 +170,9 @@ contract DigitalAssetToken is ERC20_interface, Owned {
         (bool _isStakeholder, ) = isStakeholder(assetId, _stakeholder);
         if (!_isStakeholder){
            // tempSH.push(_stakeholder);
-           uint256 numStakeHolders = a.numStakeHolders;
-           a.stakeholders[numStakeHolders] = _stakeholder;
-           a.numStakeHolders = numStakeHolders + 1;
+           a.stakeholders.push(_stakeholder);
+           a.numStakeHolders = a.numStakeHolders + 1;
         }
-        assets[assetId] = a;
    }
 
    /**
@@ -180,13 +185,14 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        public
        onlyOwner
    {
+       assetInfo storage a = assets[assetId];
        (bool _isStakeholder, uint256 s) 
            = isStakeholder(assetId, _stakeholder);
-    //   if (_isStakeholder){
-    //       stakeholders[s] 
-    //           = stakeholders[stakeholders.length - 1];
-    //       stakeholders.pop();
-    //   }
+       if (_isStakeholder){
+           a.stakeholders[s] 
+               = a.stakeholders[a.stakeholders.length - 1];
+           a.stakeholders.pop();
+       }
    }
 
    /**
@@ -200,7 +206,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        view
        returns(uint256)
    {
-       //return balanceOf(_stakeholder) / totalSupply();
+       return balanceOf(assetId,_stakeholder) / totalSupply(assetId);
    }
 
    /**
@@ -212,14 +218,15 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        public
        onlyOwner
    {
-    //   for (uint256 s = 0; s < stakeholders.length; s += 1){
-    //       address stakeholder = stakeholders[s];
-    //       uint256 revenue 
-    //           = address(this).balance * getShare(stakeholder);
-    //       accumulated = accumulated.sub(revenue);
-    //       revenues[stakeholder] 
-    //           = revenues[stakeholder].add(revenue);
-    //   }
+       assetInfo storage a = assets[assetId];
+       for (uint256 s = 0; s < a.stakeholders.length; s += 1){
+           address stakeholder = a.stakeholders[s];
+           uint256 revenue 
+               = address(this).balance * getShare(assetId, stakeholder);
+           a.accumulated = a.accumulated.sub(revenue);
+           a.revenues[stakeholder] 
+               = a.revenues[stakeholder].add(revenue);
+       }
    }
 
    /**
@@ -230,10 +237,12 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    function withdraw(uint256 assetId)
        public
    {
-       
-    //   uint256 revenue = revenues[msg.sender];
-    //   revenues[msg.sender] = 0;
-    //   address payable recipient = msg.sender;
-    //   recipient.transfer(revenue);
+       assetInfo storage a = assets[assetId];
+       uint256 revenue = a.revenues[msg.sender];
+       a.revenues[msg.sender] = 0;
+       address payable recipient = msg.sender;
+       recipient.transfer(revenue);
    }
+   
+   
 }
