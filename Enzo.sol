@@ -75,25 +75,21 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     /**
     * TODO: return the list of assets available for trade
     */
-/*    function getAssetList() public view returns (address [] memory, string [] memory, string [] memory,string [] memory,uint256[]memory,uint256[]memory,uint256[]memory){
-        address owner=[];
-        string memory assetType=[];
-        string memory assetName=[];
-        string memory assetIntro=[];
-        uint256 accumulated=[];
-        uint256 totalSupply=[];
-        uint256 priceOfToken=[];
+    function getAssetList() public view returns (string memory){
+        string memory accumulated="";
         for (uint256 s = 0; s<assetsIds.length; s+=1){
-            owner.append(assets[s].owner);
-            assetType.append(assets[s].assetType);
-            assetName.append(assets[s].assetName);
-            assetIntro.append(assets[s].assetIntro);
-            accumulated.append(assets[s].accumulated);
-            totalSupply.append(assets[s]._totalSupply);
-            priceOfToken.append(assets[s].priceOfToken);
+            uint256 id = assetsIds[s];
+            accumulated = string(abi.encodePacked(accumulated, "-----------Asset ID: ",uintToString(id), "+++Name: ", assets[id].assetName, ",Type: ", assets[id].assetType, ",Intro: ",assets[id].assetIntro, ",Price of Token: ",uintToString(assets[id].priceOfToken),"-----------"));
+            // owner.append(assets[s].owner);
+            // assetType.append(assets[s].assetType);
+            // assetName.append(assets[s].assetName);
+            // assetIntro.append(assets[s].assetIntro);
+            // accumulated.append(assets[s].accumulated);
+            // totalSupply.append(assets[s]._totalSupply);
+            // priceOfToken.append(assets[s].priceOfToken);
         }
-        return (owner, assetType, assetName, assetIntro, accumulated, totalSupply, priceOfToken);
-    }*/
+        return (accumulated);
+    }
 
    /**
     * TODO: add support to multi-class asset
@@ -318,6 +314,22 @@ contract DigitalAssetToken is ERC20_interface, Owned {
        address payable recipient = msg.sender;
        recipient.transfer(revenue);
    }
+   
+   function uintToString(uint v) public view returns (string memory str) {
+        uint maxlength = 100;
+        bytes memory reversed = new bytes(maxlength);
+        uint i = 0;
+        while (v != 0) {
+            uint remainder = v % 10;
+            v = v / 10;
+            reversed[i++] = byte(uint8(48 + remainder));
+        }
+        bytes memory s = new bytes(i + 1);
+        for (uint j = 0; j <= i; j++) {
+            s[j] = reversed[i - j];
+        }
+        str = string(s);
+    }
    
    
 }
