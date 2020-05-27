@@ -43,9 +43,13 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     mapping(address => mapping(address => ApproveTokenSales)) approvedSales; //A mapping to store all the approved sales of tokens to another stakeholder
    }
 
-    mapping(uint256 => assetInfo) assets;
+    mapping(uint256 => assetInfo) assets; //A mapping to keep all assets registered on the contract
     uint256[] public assetsIds;
-
+   
+   
+    /*
+    register an asset on the contract with asset specifications      
+    */
     function registerAssets(string memory assetType, string memory assetName, string memory assetIntro, uint256 accumulated, 
     uint256 _totalSupply, uint256 priceOfToken) public returns(string memory){
         uint256 numAssets = assetsIds.length;
@@ -74,7 +78,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     }
     
     /**
-    * TODO: return the list of assets available for trade
+    * return the list of assets available for trade
     */
     function getAssetList() public view returns (string memory){
         string memory accumulated="";
@@ -86,7 +90,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
     }
 
    /**
-    * TODO: add support to multi-class asset
+    * 
     *  A function to receive ether payment to the contract.
     */
    function pay_to_contract(uint256 assetId)
@@ -98,7 +102,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
    
    /**
-    * TODO: add support to multi-class asset
+    * 
     *   A function that returns the total supply of tokens, defined in the ERC20 interface. 
     */
    function totalSupply(uint256 assetId)
@@ -112,7 +116,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
    
    /**
-    * TODO: add multi-class support
+    * 
     * A function which returns the amount of real estate token owned by an address, defined in the ERC20 interface.
     * 
     * @param tokenOwner The address to get its tokens owned.
@@ -128,7 +132,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
    
    /**
-    * TODO: add multi-class support
+    * 
     * 
     * A function to transfer real estate token to another address. 
     * Can only send to the addresses in the stakeholder list.
@@ -152,7 +156,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
 
    /**
-    * TODO: add multi-class support
+    * 
     * A function to check if an address is a stakeholders involved i the contract.
     * Returns whether the address is a stakeholder, and if so its position in the stakeholders array.
     * 
@@ -171,7 +175,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
 
    /**
-    * TODO: add multi-class support
+    * 
     * A function to add a new address to the stakeholder list. 
     * 
     * @param _stakeholder The address to be added.
@@ -190,7 +194,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
 
    /**
-    * TODO: add multi-class support
+    *
     * A function to remove an address from the stakeholder list. do nothing if the address is not in the list.
     * 
     * @param _stakeholder The address to remove.
@@ -210,7 +214,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
 
    /**
-    * TODO: add multi-class support
+    * 
     * A function to get the proportion of tokens hold by an address, expressed in percentage.
     * 
     * @param _stakeholder The stakeholder to calculate share for.
@@ -275,7 +279,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
    
    /**
-    * TODO: add multi-class support
+    * 
     * A function to distribute the accumulated amount to all the stakeholders by their share.
     * Only the owner of the contract can execute this function.
     */
@@ -295,7 +299,7 @@ contract DigitalAssetToken is ERC20_interface, Owned {
    }
 
    /**
-    * TODO: add multi-class support
+    * 
     * A function to withdraw the distributed amount to their own account.
     * Withdraw the amount of the message sender. 
     */
